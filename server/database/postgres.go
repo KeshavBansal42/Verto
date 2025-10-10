@@ -21,7 +21,11 @@ func ConnectPostgres() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	pool, err := pgxpool.New(ctx, dbURL)
+	config, _ := pgxpool.ParseConfig(dbURL)
+	config.MaxConns = 10
+	config.MinConns = 1
+	config.MaxConnLifetime = 30 * time.Minute
+	pool, err := pgxpool.NewWithConfig(ctx, config)
 
 	if err != nil {
 		return fmt.Errorf("failed to connect to Postgres: %w", err)
