@@ -2,11 +2,26 @@ package database
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/AdityaTaggar05/Verto/server/models"
 	"github.com/georgysavva/scany/v2/pgxscan"
 	"github.com/gofiber/fiber/v3"
 )
+
+func FetchSessions(c fiber.Ctx, search, count string) ([]models.Session, error) {
+	var sessions []models.Session
+
+	query := `
+		SELECT * FROM sessions
+		WHERE LOWER(title) LIKE '%' || $1 || '%'
+		LIMIT $2;
+	`
+	if err := pgxscan.Select(c.Context(), DB, &sessions, query, strings.ToLower(search), count); err != nil {
+		return nil, err
+	}
+	return sessions, nil
+}
 
 func FetchUpcomingSessions(c fiber.Ctx, uid string) ([]models.Session, error) {
 	var sessions []models.Session

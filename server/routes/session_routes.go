@@ -6,6 +6,7 @@ import (
 )
 
 func RegisterSessionRoutes(r fiber.Router) {
+	r.Get("/", services.AuthMiddleware, services.FetchSessions)
 	r.Get("/upcoming", services.AuthMiddleware, services.FetchUpcomingSessions)
 	r.Get("/recent", services.AuthMiddleware, services.FetchRecentlyAddedSessions)
 	r.Post("/create", services.AuthMiddleware, services.CreateSession)

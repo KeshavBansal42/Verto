@@ -122,3 +122,21 @@ func FetchTimeline(c fiber.Ctx) error {
 
 	return utils.RespondSuccess(c, fiber.StatusOK, "sessions fetched successfully", sessions)
 }
+
+func FetchSessions(c fiber.Ctx) error {
+	search := c.Query("search")
+	count := c.Query("count")
+
+	if count == "" {
+		count = "10"
+	}
+
+	sessions, err := database.FetchSessions(c, search, count)
+
+	if err != nil {
+		log.Println("[SESSIONS]:", err.Error())
+		return utils.RespondError(c, fiber.StatusInternalServerError, err.Error())
+	}
+
+	return utils.RespondSuccess(c, fiber.StatusOK, "sessions fetched successfully", sessions)
+}
