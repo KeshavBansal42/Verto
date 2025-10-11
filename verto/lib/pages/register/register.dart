@@ -8,7 +8,7 @@ import 'package:verto/widgets/custom_textfield.dart';
 import 'package:verto/widgets/password_text_field.dart';
 
 class RegisterPage extends StatefulWidget {
-  RegisterPage({super.key});
+  const RegisterPage({super.key});
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();
