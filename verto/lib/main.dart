@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:verto/pages/login/login.dart';
 import 'package:verto/pages/main.dart';
+import 'package:verto/pages/profile/profile.dart';
 import 'package:verto/pages/register/register.dart';
 import 'package:verto/pages/sessioncreation/create_session.dart';
 void main() {
@@ -15,7 +16,7 @@ class VertoApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: CreateSession(),
+      home: CreateSession()
     );
   }
 }
