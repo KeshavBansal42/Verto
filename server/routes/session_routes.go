@@ -10,4 +10,5 @@ func RegisterSessionRoutes(r fiber.Router) {
 	r.Get("/recent", services.AuthMiddleware, services.FetchRecentlyAddedSessions)
 	r.Post("/create", services.AuthMiddleware, services.CreateSession)
 	r.Post("/book/:id", services.AuthMiddleware, services.BookSession)
+	r.Get("/timeline", services.AuthMiddleware, services.FetchTimeline)
 }
