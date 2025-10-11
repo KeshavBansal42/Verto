@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:verto/models/session.dart';
 import 'package:verto/widgets/coinbalance.dart';
-import 'widgets/carousel.dart';
+
+import 'widgets/recently_added_section.dart';
 
 class ExplorePage extends StatefulWidget {
   const ExplorePage({super.key});
@@ -9,6 +11,9 @@ class ExplorePage extends StatefulWidget {
 }
 
 class _ExplorePageState extends State<ExplorePage> {
+  late Future<List<Session>> _sessionsFuture;
+  List<Session> _allApiSessions = [];
+  List<Session> _filteredApiSessions = [];
   bool isCarousel = true;
 
   final TextEditingController _searchController = TextEditingController();
@@ -36,19 +41,23 @@ class _ExplorePageState extends State<ExplorePage> {
   void _filterSessions() {
     final query = _searchController.text.toLowerCase();
     setState(() {
-      _filteredSessions = _allSessions.where((session) {
+      if (query.isEmpty) {
+        _filteredApiSessions = _allApiSessions;
+        isCarousel = true;
+      } else {
         isCarousel = false;
-        final sessionLower = session.toLowerCase();
-        return sessionLower.contains(query);
-      }).toList();
+        _filteredApiSessions = _allApiSessions.where((session) {
+          return session.hostID.toLowerCase().contains(query) ||
+              session.id.toLowerCase().contains(query);
+        }).toList();
+      }
     });
   }
 
+  @override
   void initState() {
     super.initState();
-    // Initially, the filtered list contains all sessions
-    _filteredSessions = _allSessions;
-    // Listen for changes in the text field
+    // _sessionsFuture = fetchRecentSessions();
     _searchController.addListener(_filterSessions);
   }
 
@@ -179,15 +188,13 @@ class _SessionCardState extends State<SessionCard> {
                           ),
                         ),
                         SizedBox(height: 12),
-                        Text('Taken by: Aditya Taggar',
-                          style: TextStyle(
-                            fontSize: 16,
-                          ),
+                        Text(
+                          'Taken by: Aditya Taggar',
+                          style: TextStyle(fontSize: 16),
                         ),
-                        Text('Timings: 4:00 pm to 5:00 pm',
-                          style: TextStyle(
-                            fontSize: 16,
-                          ),
+                        Text(
+                          'Timings: 4:00 pm to 5:00 pm',
+                          style: TextStyle(fontSize: 16),
                         ),
                       ],
                     ),
@@ -200,9 +207,7 @@ class _SessionCardState extends State<SessionCard> {
               Divider(color: Colors.grey.shade600, height: 32),
               Text(
                 "Flutter is an open-source software development kit (SDK) developed by Google",
-                style: TextStyle(
-                  fontSize: 16,
-                ),
+                style: TextStyle(fontSize: 16),
               ),
               SizedBox(height: 12),
               ElevatedButton(
