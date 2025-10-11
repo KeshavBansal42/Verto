@@ -8,7 +8,7 @@ enum RequestType { post, get }
 Future<T?> makeRequest<T>({
   required RequestType type,
   required String path,
-  required T Function(dynamic) fromJson,
+  T Function(dynamic)? fromJson,
   Map<String, dynamic>? data,
   int successCode = 200,
 }) async {
@@ -36,7 +36,7 @@ Future<T?> makeRequest<T>({
       break;
   }
 
-  if (response.statusCode == successCode) {
+  if (response.statusCode == successCode && fromJson != null) {
     return fromJson(jsonDecode(response.body)["data"]);
   }
 
