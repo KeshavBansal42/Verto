@@ -16,7 +16,8 @@ class VertoApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: CreateSession()
+      debugShowCheckedModeBanner: false,
+      home: MainPage(),
     );
   }
 }
