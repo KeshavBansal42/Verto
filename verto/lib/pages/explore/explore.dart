@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:verto/api/session.dart';
 import 'package:verto/models/session.dart';
+import 'package:verto/utils/extensions.dart';
 import 'package:verto/widgets/coinbalance.dart';
 
 import 'widgets/recently_added_section.dart';
@@ -11,26 +13,8 @@ class ExplorePage extends StatefulWidget {
 }
 
 class _ExplorePageState extends State<ExplorePage> {
-  late Future<List<Session>> _sessionsFuture;
-  List<Session> _allApiSessions = [];
-  List<Session> _filteredApiSessions = [];
   bool isCarousel = true;
-
   final TextEditingController _searchController = TextEditingController();
-
-  final List<String> _allSessions = [
-    'Introduction to flutter',
-    'State Management with Provider',
-    'Advanced Dart Concepts',
-    'Firebase for Flutter Apps',
-    'Building Responsive UIs',
-    'Animations in Flutter',
-    'Testing Flutter Applications',
-    'CI/CD for Flutter',
-  ];
-
-  // The list that will be displayed and filtered
-  List<String> _filteredSessions = [];
 
   @override
   void dispose() {
@@ -38,36 +22,12 @@ class _ExplorePageState extends State<ExplorePage> {
     super.dispose();
   }
 
-  void _filterSessions() {
-    final query = _searchController.text.toLowerCase();
-    setState(() {
-      if (query.isEmpty) {
-        _filteredApiSessions = _allApiSessions;
-        isCarousel = true;
-      } else {
-        isCarousel = false;
-        _filteredApiSessions = _allApiSessions.where((session) {
-          return session.hostID.toLowerCase().contains(query) ||
-              session.id.toLowerCase().contains(query);
-        }).toList();
-      }
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    // _sessionsFuture = fetchRecentSessions();
-    _searchController.addListener(_filterSessions);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(backgroundColor: Colors.white, toolbarHeight: 20),
       body: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.fromLTRB(12, 64, 12, 12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -124,10 +84,33 @@ class _ExplorePageState extends State<ExplorePage> {
                             ]
                           : [SizedBox(height: 20)],
                     ),
-                    ...List.generate(_filteredSessions.length, (index) {
-                      final session = _filteredSessions[index];
-                      return SessionCard(session: session);
-                    }),
+                    FutureBuilder<List<Session>?>(
+                      future: fetchSessionSearchwise(
+                        context: context,
+                        count: 10,
+                        search: _searchController.text,
+                      ),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return Padding(
+                            padding: const EdgeInsets.all(32.0),
+                            child: Center(child: CircularProgressIndicator()),
+                          );
+                        }
+
+                        if (snapshot.data == null) {
+                          return Center(
+                            child: Text("No matching sessions found"),
+                          );
+                        }
+
+                        return Column(
+                          children: snapshot.data!
+                              .map<SessionCard>((e) => SessionCard(session: e))
+                              .toList(),
+                        );
+                      },
+                    ),
                   ],
                 ),
               ),
@@ -142,7 +125,7 @@ class _ExplorePageState extends State<ExplorePage> {
 class SessionCard extends StatefulWidget {
   const SessionCard({super.key, required this.session});
 
-  final String session;
+  final Session session;
 
   @override
   State<SessionCard> createState() => _SessionCardState();
@@ -177,7 +160,7 @@ class _SessionCardState extends State<SessionCard> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Text(
-                          widget.session,
+                          widget.session.title,
                           maxLines: 2,
                           softWrap: true,
                           overflow: TextOverflow.ellipsis,
@@ -189,11 +172,11 @@ class _SessionCardState extends State<SessionCard> {
                         ),
                         SizedBox(height: 12),
                         Text(
-                          'Taken by: Aditya Taggar',
+                          'Taken by: ${widget.session.hostName}',
                           style: TextStyle(fontSize: 16),
                         ),
                         Text(
-                          'Timings: 4:00 pm to 5:00 pm',
+                          'Timings: ${widget.session.startTime.customFormat()}',
                           style: TextStyle(fontSize: 16),
                         ),
                       ],
@@ -205,10 +188,7 @@ class _SessionCardState extends State<SessionCard> {
             ),
             if (isExpanded) ...[
               Divider(color: Colors.grey.shade600, height: 32),
-              Text(
-                "Flutter is an open-source software development kit (SDK) developed by Google",
-                style: TextStyle(fontSize: 16),
-              ),
+              Text(widget.session.description, style: TextStyle(fontSize: 16)),
               SizedBox(height: 12),
               ElevatedButton(
                 onPressed: () {},

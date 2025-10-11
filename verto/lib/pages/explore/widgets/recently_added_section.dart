@@ -36,6 +36,7 @@ class _RecentlyAddedCarouselState extends State<RecentlyAddedCarousel> {
               height: 200.0,
               autoPlay: true,
               enlargeCenterPage: true,
+              enableInfiniteScroll: false,
             ),
             items: snapshot.data!.map<Widget>((session) {
               bool isHost = session.hostID == StorageService().getID();

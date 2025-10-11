@@ -5,7 +5,8 @@ import 'package:verto/utils/requests.dart';
 
 Future<List<Session>?> fetchRecent({required BuildContext context}) async =>
     await makeRequest<List<Session>>(
-      type: RequestType.post,
+      context: context,
+      type: RequestType.get,
       path: "/api/sessions/recent?count=10",
       fromJson: (fetched) =>
           fetched.map<Session>((session) => Session.fromJson(session)).toList(),
@@ -34,13 +35,10 @@ Future<Session?> create({
   return session;
 }
 
-void book({required String id}) async {
-  void book = await makeRequest<void>(
-    type: RequestType.post,
-    path: "/api/session/book/$id",
-  );
-  return;
-}
+void book({required String id}) async => await makeRequest<void>(
+  type: RequestType.post,
+  path: "/api/session/book/$id",
+);
 
 Future<List<Session>?> fetchSessionsDaywise({
   required BuildContext context,
@@ -48,6 +46,7 @@ Future<List<Session>?> fetchSessionsDaywise({
   required String day,
 }) async {
   List<Session>? sessions = await makeRequest<List<Session>>(
+    context: context,
     type: RequestType.get,
     path: "/api/sessions/timeline?mode=$day",
     fromJson: (fetched) =>
@@ -64,6 +63,7 @@ Future<List<Session>?> fetchSessionSearchwise({
   required String search,
 }) async {
   List<Session>? sessions = await makeRequest<List<Session>>(
+    context: context,
     type: RequestType.get,
     path: "/api/sessions?count=$count&search=$search",
     fromJson: (fetched) =>
@@ -76,6 +76,7 @@ Future<List<Session>?> fetchSessionSearchwise({
 
 Future<List<Session>?> fetchUpcoming(BuildContext context) async =>
     await makeRequest<List<Session>>(
+      context: context,
       type: RequestType.get,
       path: "/api/sessions/upcoming",
       fromJson: (fetched) {
