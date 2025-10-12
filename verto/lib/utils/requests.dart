@@ -50,7 +50,7 @@ Future<T?> makeRequest<T>({
     return null;
   }
 
-  print("BACH GYA");
+  print(response.statusCode);
 
   if (response.statusCode == 401) {
     http.Response res = await http.post(
@@ -58,6 +58,7 @@ Future<T?> makeRequest<T>({
       headers: {'Content-Type': 'application/json; charset=UTF-8'},
       body: {'refresh_token': StorageService().getRefreshToken()},
     );
+    print("REFRESH");
 
     Map<String, dynamic> data = jsonDecode(res.body);
 

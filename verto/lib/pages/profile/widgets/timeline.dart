@@ -10,7 +10,6 @@ class SessionTimeline extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      
       decoration: const BoxDecoration(color: Colors.white),
       margin: const EdgeInsets.only(bottom: 12.0),
       padding: const EdgeInsets.only(top: 12.0, left: 28.0, bottom: 12.0),
@@ -47,7 +46,9 @@ class SessionTimeline extends StatelessWidget {
                     width: 3,
                     height: isLast ? 0 : 50,
                     decoration: BoxDecoration(
-                      color: isLast ? Colors.transparent : (completed ? Colors.green : Colors.grey),
+                      color: isLast
+                          ? Colors.transparent
+                          : (completed ? Colors.green : Colors.grey),
                       shape: BoxShape.rectangle,
                     ),
                   ),
@@ -63,7 +64,7 @@ class SessionTimeline extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        "${session.startTime.customFormat()} - ${session.startTime.add(const Duration(hours: 1)).customFormat()}",
+                        session.startTime.customFormat(),
                         style: TextStyle(
                           fontFamily: "regular",
                           fontSize: 14,
@@ -74,16 +75,16 @@ class SessionTimeline extends StatelessWidget {
 
                       const SizedBox(height: 4),
                       Text(
-                        session.price.toString(),
+                        session.title,
                         style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.black54,
+                          fontSize: 18,
+                          color: Colors.black,
                         ),
                       ),
                       Text(
-                        session.id,
+                        "Amount: ${session.price}",
                         style: const TextStyle(
-                          fontSize: 12,
+                          fontSize: 14,
                           color: Colors.grey,
                         ),
                       ),

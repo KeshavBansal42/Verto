@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:verto/api/session.dart';
+import 'package:verto/utils/elements.dart';
 
 class CreateSession extends StatefulWidget {
   const CreateSession({super.key});
@@ -12,6 +14,8 @@ class _CreateSessionState extends State<CreateSession> {
   final TextEditingController _descriptionController = TextEditingController();
   double _sessionPrice = 10.0;
   TimeOfDay? _selectedTime;
+  bool status = true;
+
   void _selectTime() async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
@@ -24,32 +28,42 @@ class _CreateSessionState extends State<CreateSession> {
     }
   }
 
-  void submitSession() {
+  void submitSession() async {
     final title = _titleController.text;
     final description = _descriptionController.text;
-    final price = _sessionPrice;
     final time = _selectedTime;
+    final today = DateTime.now();
 
     if (title.isEmpty || description.isEmpty || time == null) {
-      const snackBar = SnackBar(
-        content: Text(
-          "Please fill al the fields correctly",
-          style: TextStyle(
-            fontSize: 20.0,
-            fontWeight: FontWeight.bold
-          )
-        ),
-        backgroundColor: Color.fromARGB(241, 235, 125, 57),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      showSnackBar(context, "Please fill in the fields correctly");
       return;
     }
+
+    setState(() => status = false);
+    await create(
+      startTime: DateTime(
+        today.year,
+        today.month,
+        today.day + 1,
+        time.hour,
+        time.minute,
+      ).toUtc().toIso8601String(),
+      price: _sessionPrice.toInt(),
+      title: title,
+      description: description,
+    );
+    setState(() => status = true);
+
+    Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Create new session')),
+      appBar: AppBar(
+        title: Text('Create a New Session'),
+        backgroundColor: Colors.white,
+      ),
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
@@ -58,7 +72,7 @@ class _CreateSessionState extends State<CreateSession> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'Session Title',
+                'Title',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
@@ -71,7 +85,7 @@ class _CreateSessionState extends State<CreateSession> {
               ),
               const SizedBox(height: 30),
               const Text(
-                'Session Description',
+                'Description',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
@@ -136,19 +150,20 @@ class _CreateSessionState extends State<CreateSession> {
 
                     child: Text(
                       _selectedTime == null
-                          ? 'Tap to Set Time Slot (24h Clock)'
+                          ? 'Set Time (24h Clock)'
                           : 'Time Selected: ${_selectedTime!.format(context)}',
-                      style: const TextStyle(fontSize: 16),
                     ),
                   ),
                 ],
               ),
               const Spacer(),
               ElevatedButton(
-                onPressed: () => submitSession(),
+                onPressed: status ? submitSession : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue.shade400,
-                  foregroundColor: Colors.black,
+                  backgroundColor: status
+                      ? Colors.blue.shade400
+                      : Colors.grey.shade800,
+                  foregroundColor: Colors.white,
                   minimumSize: const Size(double.infinity, 50),
                 ),
                 child: Text(
