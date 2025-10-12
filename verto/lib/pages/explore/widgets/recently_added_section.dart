@@ -18,7 +18,7 @@ class _RecentlyAddedCarouselState extends State<RecentlyAddedCarousel> {
     return FutureBuilder<List<Session>?>(
       future: fetchRecent(context: context),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return Padding(
             padding: const EdgeInsets.all(32.0),
             child: Center(child: CircularProgressIndicator()),
@@ -26,7 +26,10 @@ class _RecentlyAddedCarouselState extends State<RecentlyAddedCarousel> {
         }
 
         if (snapshot.data == null) {
-          return Center(child: Text("No upcoming sessions yet!"));
+          return Padding(
+            padding: const EdgeInsets.all(16),
+            child: Center(child: Text("No upcoming sessions yet!")),
+          );
         }
 
         return SizedBox(

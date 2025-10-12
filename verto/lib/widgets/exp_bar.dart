@@ -14,17 +14,15 @@ class _ExpBarState extends State<ExpBar> {
       message: '75/100',
       child: Stack(
         children: [
-          CircularProgressIndicator(value: 0.75,),
+          CircularProgressIndicator(value: 0.75),
           Positioned(
             top: 8,
             left: 8,
-            child: Text('42',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                
-              ),
-            )),
+            child: Text(
+              '12',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ),
         ],
       ),
     );

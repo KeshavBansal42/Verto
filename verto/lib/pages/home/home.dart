@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:verto/services/storage_service.dart';
 import 'package:verto/widgets/coinbalance.dart';
 import 'package:verto/widgets/exp_bar.dart';
+
 import 'widgets/upcoming_section.dart';
 
 class HomePage extends StatefulWidget {
@@ -22,14 +24,11 @@ class _HomePageState extends State<HomePage> {
           padding: EdgeInsets.only(left: 16),
           child: CircleAvatar(backgroundImage: AssetImage('assets/pfp.jpg')),
         ),
-        title: Text('John Doe', style: TextStyle(color: Colors.black)),
-        actions: [
-          ExpBar(),
-          SizedBox(
-            width: 16,
-          ),
-          CoinBalance(),
-        ],
+        title: Text(
+          StorageService().getUsername(),
+          style: TextStyle(color: Colors.black),
+        ),
+        actions: [ExpBar(), SizedBox(width: 16), CoinBalance()],
       ),
       body: Padding(
         padding: EdgeInsets.all(16),

@@ -93,7 +93,8 @@ class _ExplorePageState extends State<ExplorePage> {
                         search: _searchController.text,
                       ),
                       builder: (context, snapshot) {
-                        if (!snapshot.hasData) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
                           return Padding(
                             padding: const EdgeInsets.all(32.0),
                             child: Center(child: CircularProgressIndicator()),
